@@ -43,11 +43,12 @@ const fdmgPurposes = [
 ];
 
 function consentVendor(vendorName: string = "") {
-    if ((vendorName && vendorName !== "inline-html") || !window.__cmp) {
+    console.log(vendorName);
+    if ((vendorName && vendorName !== "inline-html") || !window.__tcfapi) {
         activateVendor(vendorName);
     } else {
         window.__tcfapi("accept", 2, (result: any) => {
-            console.log(result);
+            window.location.reload();
         });
     }
 }
@@ -141,6 +142,18 @@ if (window.__tcfapi && !document.querySelector("html.cookiewall")) {
 
             window.__tcfapi("getTCData", 2, (tcData: any, success: any) => {
                 console.log(tcData, success);
+                const allConsent = (Object as any)
+                    .values(tcData.purpose.consents)
+                    .reduce((prev: boolean, cur: boolean) => {
+                        return prev && cur;
+                    }, true);
+                console.log("All consent", allConsent);
+                if (allConsent) {
+                    // Activate inline-html.
+                    activateVendor("inline-html");
+                } else {
+                    showLock("inline-html");
+                }
             });
 
             /**
