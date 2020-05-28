@@ -1,0 +1,10 @@
+{
+    "version": 2,
+    "builds": [
+        { "src": "img/**", "use": "@now/static" },
+        { "src": "dist/**", "use": "@now/static" },
+        { "src": "index.html", "use": "@now/static" },
+        { "src": "static/**", "use": "@now/static" }
+    ],
+    "regions": ["bru"]
+}
