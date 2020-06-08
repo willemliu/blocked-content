@@ -140,21 +140,28 @@ if (window.__tcfapi && !document.querySelector("html.cookiewall")) {
         (e: any) => {
             console.log(e);
 
-            window.__tcfapi("getTCData", 2, (tcData: any, success: any) => {
-                console.log(tcData, success);
-                const allConsent = (Object as any)
-                    .values(tcData.purpose.consents)
-                    .reduce((prev: boolean, cur: boolean) => {
-                        return prev && cur;
-                    }, true);
-                console.log("All consent", allConsent);
-                if (allConsent) {
-                    // Activate inline-html.
-                    activateVendor("inline-html");
-                } else {
-                    showLock("inline-html");
-                }
-            });
+            /**
+             * Inline-HTML consent equals consent for all.
+             */
+            // window.__tcfapi("getTCData", 2, (tcData: any, success: any) => {
+            //     console.log(tcData, success);
+            //     const allConsent = (Object as any)
+            //         .values(tcData.purpose.consents)
+            //         .reduce((prev: boolean, cur: boolean) => {
+            //             return prev && cur;
+            //         }, true);
+            //     console.log("All consent", allConsent);
+            //     if (allConsent) {
+            //         // Activate inline-html.
+            //         activateVendor("inline-html");
+            //     } else {
+            //         showLock("inline-html");
+            //     }
+            // });
+            /**
+             * Always show inline-html as we prune our inline-html content.
+             */
+            activateVendor("inline-html");
 
             /**
              * Retrieve all vendors.
@@ -225,7 +232,6 @@ if (consentButtons.length) {
                       (vendor: any) => vendor.name.toLowerCase() === vendorName
                   )
                 : true;
-            console.log(foundVendor);
             if (!foundVendor) {
                 consentVendor("");
             } else {
@@ -239,15 +245,17 @@ if (consentButtons.length) {
                         2,
                         (result: any) => {
                             console.log("accept", result);
+                            console.log(
+                                `vendorId: ${
+                                    foundVendor.id
+                                }, purposeIds: ${JSON.stringify(
+                                    foundVendor.purposes
+                                )}`
+                            );
                         },
                         {
-                            data: [
-                                {
-                                    ...foundVendor,
-                                    vendorId: foundVendor.id,
-                                    purposeIds: foundVendor.purposes,
-                                },
-                            ],
+                            vendorIds: [foundVendor.id],
+                            purposeIds: foundVendor.purposes,
                         }
                     );
                     consentVendor(vendorName);
